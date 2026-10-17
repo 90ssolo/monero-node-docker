@@ -1,0 +1,12 @@
+{
+  "name": "monero-node-docker",
+  "version": "1.0.0",
+  "description": "Docker Compose setups for running a self-hosted Monero node (Mainnet pruned/full and Stagenet) with Caddy HTTPS TLS, browser-wallet CORS headers, restricted RPC, and Tor v3 .onion support.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "test": "node scripts/validate.mjs",
+    "validate": "node scripts/validate.mjs",
+    "check-node": "node scripts/check-node.mjs"
+  }
+}

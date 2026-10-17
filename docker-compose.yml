@@ -1,0 +1,48 @@
+services:
+  monerod:
+    image: sethsimmons/simple-monerod:${MONERO_VERSION:-latest}
+    container_name: monerod-mainnet-pruned
+    restart: unless-stopped
+    stop_grace_period: 2m
+    user: "1000:1000"
+    volumes:
+      - bitmonero-data:/home/monero/.bitmonero
+      - ./config/monerod-pruned.conf:/home/monero/monerod.conf:ro
+    ports:
+      # P2P consensus port (open in firewall to help the Monero network)
+      - "${P2P_PORT:-18080}:18080"
+      # Restricted wallet RPC (bound to localhost by default when using Caddy HTTPS;
+      # set RPC_BIND_IP=0.0.0.0 in .env if connecting directly without Caddy)
+      - "${RPC_BIND_IP:-127.0.0.1}:${RPC_RESTRICTED_PORT:-18089}:18089"
+    command:
+      - "--config-file=/home/monero/monerod.conf"
+      - "--non-interactive"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:18089/get_info"]
+      interval: 45s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: monerod-caddy-proxy
+    restart: unless-stopped
+    depends_on:
+      - monerod
+    environment:
+      - MONERO_DOMAIN=${MONERO_DOMAIN:-localhost}
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  bitmonero-data:
+  caddy-data:
+  caddy-config:

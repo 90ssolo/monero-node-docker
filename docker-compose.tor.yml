@@ -1,0 +1,16 @@
+services:
+  tor:
+    image: goldy/tor-hidden-service:latest
+    container_name: monerod-tor-onion
+    restart: unless-stopped
+    depends_on:
+      - monerod
+    environment:
+      # Exposes v3 .onion address on port 18089 forwarding to monerod:18089
+      MONEROD_TOR_SERVICE_HOSTS: 18089:monerod:18089
+      MONEROD_TOR_SERVICE_VERSION: "3"
+    volumes:
+      - tor-keys:/var/lib/tor/hidden_service
+
+volumes:
+  tor-keys:

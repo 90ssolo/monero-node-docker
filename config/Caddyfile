@@ -1,0 +1,31 @@
+# Caddy Reverse Proxy for Monero Restricted RPC
+# Automatically provisions Let's Encrypt TLS when MONERO_DOMAIN is a public DNS name,
+# and adds CORS headers so browser wallets (e.g. MonkStash) can sync directly.
+
+{$MONERO_DOMAIN:localhost} {
+	@cors_preflight method OPTIONS
+	handle @cors_preflight {
+		header Access-Control-Allow-Origin "{$CORS_ORIGIN:*}"
+		header Access-Control-Allow-Methods "GET, POST, OPTIONS"
+		header Access-Control-Allow-Headers "Content-Type, Accept, Authorization"
+		header Access-Control-Max-Age "86400"
+		respond "" 204
+	}
+
+	# Block administrative daemon endpoints at the edge as defense-in-depth
+	@blocked_admin path /stop_daemon /start_mining /stop_mining /Mining_status /save_bc /set_log_*
+	handle @blocked_admin {
+		respond "Forbidden" 403
+	}
+
+	handle {
+		header Access-Control-Allow-Origin "{$CORS_ORIGIN:*}"
+		header Access-Control-Allow-Methods "GET, POST, OPTIONS"
+		header Access-Control-Allow-Headers "Content-Type, Accept, Authorization"
+		header -Server
+
+		reverse_proxy monerod:18089 {
+			header_down -Access-Control-Allow-Origin
+		}
+	}
+}

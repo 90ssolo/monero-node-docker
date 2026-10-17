@@ -1,0 +1,27 @@
+services:
+  monerod-stagenet:
+    image: sethsimmons/simple-monerod:${MONERO_VERSION:-latest}
+    container_name: monerod-stagenet
+    restart: unless-stopped
+    stop_grace_period: 1m
+    user: "1000:1000"
+    volumes:
+      - bitmonero-stagenet-data:/home/monero/.bitmonero
+      - ./config/monerod-stagenet.conf:/home/monero/monerod.conf:ro
+    ports:
+      # Stagenet P2P
+      - "${STAGENET_P2P_PORT:-38080}:38080"
+      # Stagenet Restricted Wallet RPC
+      - "${STAGENET_RPC_BIND_IP:-0.0.0.0}:${STAGENET_RPC_PORT:-38089}:38089"
+    command:
+      - "--config-file=/home/monero/monerod.conf"
+      - "--non-interactive"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:38089/get_info"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  bitmonero-stagenet-data:
