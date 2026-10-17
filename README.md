@@ -43,7 +43,7 @@ The included [`config/Caddyfile`](config/Caddyfile) and [`config/monerod-pruned.
 | **Mainnet Pruned** *(Default)* | [`docker-compose.yml`](docker-compose.yml) | **~95 GB** | 2 GB | `18080` | `18089` / `443` | Personal wallets, [MonkStash](https://monkstash.com), Feather, Cake Wallet, merchant checkouts |
 | **Mainnet Full (Archival)** | [`docker-compose.full.yml`](docker-compose.full.yml) | **~240+ GB** | 4 GB | `18080` | `18089` / `443` | Archival nodes, P2Pool mining (ZMQ `18083`/`18084`), block explorers |
 | **Stagenet Pruned** | [`docker-compose.stagenet.yml`](docker-compose.stagenet.yml) | **~18 GB** | 1 GB | `38080` | `38089` | Testing payment gateways, webhooks, and wallet flows without real XMR |
-| **Tor v3 `.onion` Overlay** | [`docker-compose.tor.yml`](docker-compose.tor.yml) | +10 MB | +64 MB | — | `.onion:18089` | Connecting over Tor without opening inbound router ports |
+| **Tor v3 `.onion` Overlay** | [`docker-compose.tor.yml`](docker-compose.tor.yml) | +10 MB | +64 MB | - | `.onion:18089` | Connecting over Tor without opening inbound router ports |
 
 > **Important:** Always store the `/home/monero/.bitmonero` LMDB volume on an **SSD or NVMe drive**. Syncing Monero on a spinning HDD takes weeks and frequently stalls during batch verification.
 
